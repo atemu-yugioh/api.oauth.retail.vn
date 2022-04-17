@@ -17,6 +17,20 @@ export class UsersService {
   ) {}
 
   async register(usersRegisterDTO: UsersRegisterDTO): Promise<Users> {
+    let userRegistered: Users = await this.users.findOne({
+      phone: usersRegisterDTO.phone,
+    });
+
+    if (userRegistered) {
+      throw new HttpException(
+        new ExceptionResponseDetail(
+          HttpStatus.BAD_REQUEST,
+          'Số điện thoại đã được đăng ký !!!',
+        ),
+        HttpStatus.OK,
+      );
+    }
+
     usersRegisterDTO.password = await Password.bcryptPassword(
       usersRegisterDTO.password,
     );
